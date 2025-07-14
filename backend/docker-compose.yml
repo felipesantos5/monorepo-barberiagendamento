@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file: .env
+    depends_on:
+      - evolution-api
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3 # Ou a v2.x.x estável mais recente, ex: v2.2.3 [4]
+    container_name: evolution_api
+    restart: unless-stopped
+    ports:
+      - "8088:8080" # Porta do host:porta do contêiner. Ajuste a porta do host (primeiro número) se 8080 estiver em uso.
+    env_file:
+      - .env # Carrega variáveis de ambiente específicas da Evolution API
+    volumes:
+      - evolution_instancesv2:/evolution/instances # Volume nomeado para persistência dos dados das instâncias
+    depends_on:
+      - postgresql-evo
+      - redis
+    networks:
+      - app_network
+    environment:
+      - CONFIG_SESSION_PHONE_VERSION=2.3000.1020885143
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_REDIS_ENABLED=true
+
+  postgresql-evo:
+    image: postgres:14-alpine # Exemplo com versão específica e alpine para PostgreSQL
+    container_name: evolution_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_EVO} # Carregado do.env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_EVO} # Carregado do.env
+      POSTGRES_DB: ${POSTGRES_DB_EVO} # Carregado do.env
+    volumes:
+      - postgres_evo_data:/var/lib/postgresql/data # Volume nomeado para persistência dos dados do PostgreSQL
+    # ports: # Descomente apenas se precisar de acesso direto do host ao PostgreSQL da Evolution API
+    # - "5433:5432" # Exporia a porta 5432 do contêiner na porta 5433 do host
+    networks:
+      - app_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--port", "6379"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_network
+
+volumes:
+  evolution_instancesv2:
+    external: true
+    name: evolution_instancesv2
+  redis_data:
+    external: true
+    name: redis_data
+  postgres_evo_data:
+
+networks:
+  app_network:
+    driver: bridge

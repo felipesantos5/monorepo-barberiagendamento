@@ -1,0 +1,39 @@
+{
+  "name": "barbe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "start": "node src/app.js",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@brazilian-utils/brazilian-utils": "^1.0.0-rc.12",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.1",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "date-holidays": "^3.24.3",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.14.1",
+    "multer": "^2.0.0",
+    "node-cron": "^4.1.0",
+    "nodemailer": "^7.0.3",
+    "qrcode": "^1.5.4",
+    "twilio": "^5.5.2",
+    "zod": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "nodemon": "^3.1.10"
+  }
+}
