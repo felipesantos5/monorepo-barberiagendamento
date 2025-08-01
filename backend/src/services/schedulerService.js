@@ -4,6 +4,7 @@ import { sendWhatsAppConfirmation } from "./evolutionWhatsapp.js";
 import { startOfDay, endOfDay } from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import { formatPhoneNumber } from "../utils/phoneFormater.js";
+import { format } from "date-fns";
 
 const BRAZIL_TZ = "America/Sao_Paulo";
 
@@ -39,22 +40,36 @@ const sendDailyReminders = async () => {
       return;
     }
 
-    console.log(`${bookings.length} agendamentos encontrados para hoje. Enviando lembretes...`);
+    console.log(
+      `${bookings.length} agendamentos encontrados para hoje. Enviando lembretes...`
+    );
 
     for (const booking of bookings) {
+      c;
       // Verifica se os dados necessários existem para evitar erros
       if (!booking.customer || !booking.barbershop || !booking.barber) {
-        console.warn(`Pulando agendamento ${booking._id} por falta de dados populados.`);
+        console.warn(
+          `Pulando agendamento ${booking._id} por falta de dados populados.`
+        );
         continue;
       }
 
       const customerPhone = booking.customer.phone;
-      const appointmentTime = format(toZonedTime(new Date(booking.time), BRAZIL_TZ), "HH:mm");
+      const appointmentTime = format(
+        toZonedTime(new Date(booking.time), BRAZIL_TZ),
+        "HH:mm"
+      );
 
-      const message = `Bom dia, ${booking.customer.name}! Lembrete do seu agendamento hoje na ${booking.barbershop.name} às ${appointmentTime} com ${booking.barber.name} ✅\n\n... (resto da sua mensagem) ...`;
+      const barberShopAdress = booking.barbershop.address
+        ? `${booking.barbershop.address.rua}, ${booking.barbershop.address.numero} - ${booking.barbershop.address.bairro}`
+        : "";
+
+      const message = `Bom dia, ${booking.customer.name}! Lembrete do seu agendamento hoje na ${booking.barbershop.name} às ${appointmentTime} com ${booking.barber.name} ✅\n\nPara mais informações, entre em contato com a barbearia: ${booking.barbershop.contact} 📱\nEndereço: ${barberShopAdress}💈`;
 
       await sendWhatsAppConfirmation(customerPhone, message);
-      console.log(`Mensagem enviada para ${booking.customer.name} (${customerPhone})`);
+      console.log(
+        `Mensagem enviada para ${booking.customer.name} (${customerPhone})`
+      );
 
       // --- PASSO 3: ADICIONE A PAUSA ALEATÓRIA ---
       // Define um tempo de espera mínimo e máximo em milissegundos
@@ -62,9 +77,14 @@ const sendDailyReminders = async () => {
       const MAX_DELAY = 15000; // 15 segundos
 
       // Calcula um tempo de espera aleatório dentro do intervalo
-      const randomDelay = Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY + 1)) + MIN_DELAY;
+      const randomDelay =
+        Math.floor(Math.random() * (MAX_DELAY - MIN_DELAY + 1)) + MIN_DELAY;
 
-      console.log(`Pausando por ${(randomDelay / 1000).toFixed(1)} segundos antes do próximo envio...`);
+      console.log(
+        `Pausando por ${(randomDelay / 1000).toFixed(
+          1
+        )} segundos antes do próximo envio...`
+      );
 
       // Pausa a execução do loop pelo tempo calculado
       await delay(randomDelay);
@@ -78,7 +98,9 @@ const sendDailyReminders = async () => {
 cron.schedule(
   "0 8 * * *",
   () => {
-    console.log("Executando tarefa agendada: Envio de lembretes de agendamento.");
+    console.log(
+      "Executando tarefa agendada: Envio de lembretes de agendamento."
+    );
     sendDailyReminders();
   },
   {

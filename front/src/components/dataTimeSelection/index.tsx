@@ -257,8 +257,6 @@ export default function DateTimeSelection({
     return isHoliday(dateString);
   };
 
-  console.log(`timeSlots`, timeSlots);
-
   return (
     <AnimatePresence mode="wait">
       <motion.div

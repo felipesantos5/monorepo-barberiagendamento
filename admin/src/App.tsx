@@ -12,9 +12,10 @@ import { SetPasswordPage } from "./pages/SetPasswordPage.tsx";
 import { useAuth } from "./contexts/AuthContext.tsx";
 import CommissionsPage from "./pages/CommissionsPage.tsx";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage.tsx";
-import { AbsencesPage } from "./pages/AbsencesPage.tsx";
+import { AbsencesPage } from "./pages/folga.tsx";
 import { NewBookingPage } from "./pages/NewBookingPage.tsx";
 import { PlansPage } from "./pages/PlansPage.tsx";
+import { CustomersPage } from "./pages/CustomersPage.tsx";
 
 export default function App() {
   return (
@@ -37,9 +38,13 @@ export default function App() {
               <Route path="servicos" element={<ServicesPage />} />
               <Route path="funcionarios" element={<BarberPage />} />
               <Route path="comissoes" element={<CommissionsPage />} />
-              <Route path="agendamentos/novo-agendamento" element={<NewBookingPage />} />
+              <Route
+                path="agendamentos/novo-agendamento"
+                element={<NewBookingPage />}
+              />
               <Route path="folgas" element={<AbsencesPage />} />
               <Route path="planos" element={<PlansPage />} />
+              <Route path="clientes" element={<CustomersPage />} />
             </Route>
 
             <Route path="*" element={<>nao encontrado</>} />
